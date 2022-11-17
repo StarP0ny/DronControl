@@ -4,7 +4,7 @@ from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap, QColor, QImage
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout
 from PyQt5.QtCore import Qt, QObject
-from control_panel import Ui_MainWindow
+from interface import Ui_MainWindow
 import sys
 from djitellopy import tello
 import cv2
@@ -48,7 +48,7 @@ class mywindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.ui.lcdNumber.setPalette(palette)
         # подключение клик-сигнал к слоту btnClicked
-        #self.ui.pushButton.clicked.connect(self.btnClicked)
+        self.ui.pushButton.clicked.connect(self.btnClicked_Connect)
         self.ui.pushButton_12.clicked.connect(self.btnClicked_Land)
         self.ui.pushButton_10.clicked.connect(self.btnClicked_Start)
         self.ui.pushButton_11.clicked.connect(self.btnClicked_Stop)
@@ -67,8 +67,8 @@ class mywindow(QtWidgets.QMainWindow, Ui_MainWindow):
         ch = t.get_height()
         h = t.query_wifi_signal_noise_ratio()
 
-        self.ui.progressBar.setValue(ch)
-        self.ui.progressBar_2.setValue(int(h))
+        self.ui.progressBar_2.setValue(ch)
+        self.ui.progressBar.setValue(int(h))
         self.ui.lcdNumber.display(ch)
 
     def battery(self):
@@ -77,13 +77,14 @@ class mywindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def camera(self):
         cv_img = t.get_frame_read().frame
         qt_img = self.convert_cv_qt(cv_img)
-        #self.ui.image_label.setPixmap(qt_img)
+        self.ui.label_7.setPixmap(qt_img)
 
     def btnClicked_Stop(self):
         t.streamoff()
 
-    def btnClicked(self):
+    def btnClicked_Connect(self):
         self.ui.label.setText("Взлет")
+
         try:
             t.connect()
             t.takeoff()
@@ -134,7 +135,7 @@ class mywindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def btnClicked_Start(self):
         t.connect()
-
+        #self.camera()
         t.streamon()
         self.cam_refresh.start(40)
         self.bat_refresh.start(6000)
